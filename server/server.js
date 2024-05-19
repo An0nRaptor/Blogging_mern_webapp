@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import admin from "firebase-admin";
-// import serviceAccountKey from "./reactjs-blog-project-firebase-adminsdk-y9q7u-aebf706354.json" assert { type: "json" }
+import serviceAccountKey from "./reactjs-blog-project-firebase-adminsdk-y9q7u-aebf706354.json" assert { type: "json" }
 import {getAuth} from "firebase-admin/auth"
 import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js";
@@ -23,7 +23,7 @@ server.use(cors())
 
 admin.initializeApp({
 
-    // credential: admin.credential.cert(serviceAccountKey)
+    credential: admin.credential.cert(serviceAccountKey)
  
 })
 
