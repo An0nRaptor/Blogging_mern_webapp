@@ -23,7 +23,7 @@ server.use(cors())
 
 admin.initializeApp({
 
-    credential: admin.credential.cert(serviceAccountKey)
+    // credential: admin.credential.cert(serviceAccountKey)
  
 })
 
