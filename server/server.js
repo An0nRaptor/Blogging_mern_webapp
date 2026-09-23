@@ -160,16 +160,16 @@ server.post("/signup", (req,res)=>{
         return res.status(403).json({"error":"Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letter "})
     }
 
-         bcrypt.hash(password, 10, async (err,hashed_password) =>{
-         
+    bcrypt.hash(password, 10, async (err,hashed_password) =>{
+
         let username = await generateUsername(email)
-            
-            let user = new User({
 
-                personal_info:{fullName,email,password:hashed_password,username}
+        let user = new User({
 
-            })
-        
+            personal_info:{fullName,email,password:hashed_password,username}
+
+         })
+
         user.save().then((u)=>{
 
             // console.log(user);
@@ -179,7 +179,7 @@ server.post("/signup", (req,res)=>{
 
         }).catch((err)=>{
 
-            if(err){
+            if(err.code == 11000){
 
                 return res.status(500).json({"error":"Email already exists!"})
             }
