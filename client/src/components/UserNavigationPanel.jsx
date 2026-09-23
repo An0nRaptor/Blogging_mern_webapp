@@ -1,54 +1,61 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import AnimationWrapper from "../common/PageAnimation";
-import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { UserContext } from "../App";
 import { removeFromSession } from "../common/session";
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "./ui/dropdown-menu";
 
 const UserNavigationPanel = () => {
+  const { userAuth: { username }, setUserAuth } = useContext(UserContext);
 
-  const {userAuth:{username},setUserAuth} = useContext(UserContext);
-  
-  let navigate = useNavigate()
+  let navigate = useNavigate();
 
-  const signOutUser=()=>{
-
+  const signOutUser = () => {
     removeFromSession("user");
-    setUserAuth({access_token:null});
-    navigate("/signin")
-
-
-  }
+    setUserAuth({ access_token: null });
+    navigate("/signin");
+  };
 
   return (
-    
-    <AnimationWrapper transition={{ duration: 0.2 }} className="absolute right-0 z-50">
-      <div className="bg-white absolute right-0 border border-grey w-60 duration-200">
-        <Link to="/editor" className="flex gap-2 link md:hidden pl-8 py-4">
-          <i className="fi fi-rr-file-edit">
-            <p>Write</p>
-          </i>
+    <DropdownMenuContent>
+      <DropdownMenuItem asChild className="md:hidden">
+        <Link to="/editor">
+          <i className="fi fi-rr-file-edit"></i>
+          Write
         </Link>
+      </DropdownMenuItem>
 
-        <Link to={`/user/${username}`} className="link pl-8 py-4">
-            Profile
+      <DropdownMenuItem asChild>
+        <Link to={`/user/${username}`}>
+          <i className="fi fi-rr-user"></i>
+          Profile
         </Link>
+      </DropdownMenuItem>
 
-        <Link to={"/dashboard/blogs"} className="link pl-8 py-4">
-            Dashboard
+      <DropdownMenuItem asChild>
+        <Link to="/dashboard/blogs">
+          <i className="fi fi-rr-dashboard"></i>
+          Dashboard
         </Link>
+      </DropdownMenuItem>
 
-        <Link to={"/settings/edit-profile"} className="link pl-8 py-4">
-            Settings
+      <DropdownMenuItem asChild>
+        <Link to="/settings/edit-profile">
+          <i className="fi fi-rr-settings"></i>
+          Settings
         </Link>
-        
-        <span className="absolute border-t border-grey w-[100%]"></span>
-        <button className="text-left p-4 hover:bg-grey w-full pl-8" onClick={signOutUser}>
-          <h1 className="font-bold mb-1 text-xl">Sign Out</h1>
-          <p className="text-dark-grey">@{username}</p>
-        </button>
+      </DropdownMenuItem>
 
-      </div>
-    </AnimationWrapper>
+      <DropdownMenuSeparator />
+
+      <DropdownMenuItem onClick={signOutUser} className="flex-col items-start gap-0">
+        <h1 className="font-semibold text-black">Sign Out</h1>
+        <p className="text-muted-foreground text-sm">@{username}</p>
+      </DropdownMenuItem>
+    </DropdownMenuContent>
   );
 };
 

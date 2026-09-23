@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import admin from "firebase-admin";
-import serviceAccountKey from "./reactjs-blog-project-firebase-adminsdk-y9q7u-aebf706354.json" assert { type: "json" }
+import serviceAccountKey from "./reactjs-blog-project-firebase-adminsdk-y9q7u-aebf706354.json" with { type: "json" }
 import {getAuth} from "firebase-admin/auth"
 import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js";
@@ -160,15 +160,15 @@ server.post("/signup", (req,res)=>{
         return res.status(403).json({"error":"Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letter "})
     }
 
-    bcrypt.hash(password, 10, async (err,hashed_password) =>{
+         bcrypt.hash(password, 10, async (err,hashed_password) =>{
          
         let username = await generateUsername(email)
-        
-        let user = new User({
+            
+            let user = new User({
 
-            personal_info:{fullName,email,password:hashed_password,username}
+                personal_info:{fullName,email,password:hashed_password,username}
 
-         })
+            })
         
         user.save().then((u)=>{
 
@@ -691,7 +691,7 @@ server.post("/signin",(req,res)=>{
 
         if(id){
 
-            Blog.findOneAndUpdate({ blogId }, {title,desc,banner,content,tags,draft:draft ? draft : false})
+            Blog.findOneAndUpdate({ blog_id: blogId }, {title,desc,banner,content,tags,draft:draft ? draft : false})
             .then(()=>{
 
                 return res.status(200).json({id:blogId})
@@ -1225,10 +1225,10 @@ server.post("/user-written-blogs-count",verifyJWT,(req,res)=>{
 
 server.post("/delete-blog",verifyJWT,(req,res)=>{
 
-    let user_id = req.params;
+    let user_id = req.user;
     let {blog_id} = req.body;
 
-    Blog.findOneAndUpdate({blog_id}).then(blog=>{
+    Blog.findOneAndDelete({blog_id}).then(blog=>{
 
         Notification.deleteMany({blog:blog._id}).then(data=>console.log('Notification deleted'))
 
@@ -1236,10 +1236,10 @@ server.post("/delete-blog",verifyJWT,(req,res)=>{
             console.log('Comment deleted');
         })
 
-        User.findOneAndUpdate({_id:user_id},{$pull:{blog:blog._id},$inc:{"account_info.total_posts":-1}})
-       
+        User.findOneAndUpdate({_id:user_id},{$pull:{blogs:blog._id},$inc:{"account_info.total_posts":-1}})
+
         .then(user=>{
-          
+
             console.log('Blog deleted');
 
             return res.status(200).json({status: 'done'})

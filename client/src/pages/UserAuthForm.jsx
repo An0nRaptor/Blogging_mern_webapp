@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import AnimationWrapper from "../common/PageAnimation";
 import InputBoxComponent from "../components/InputBoxComponent";
 import googleIcon from "../imgs/google.png";
@@ -7,20 +6,21 @@ import {Toaster,toast} from "react-hot-toast";
 import axios from "axios";
 import { storeInSession } from "../common/session";
 import { UserContext } from "../App";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { authWithGoogle } from "../common/Firebase";
+import { Button } from "../components/ui/button";
+import { Card } from "../components/ui/card";
 
 const UserAuthForm = ({ type }) => {
+
+  const [redirect, setRedirect] = useState(false);
 
   // Access to the user context
   let {userAuth:{access_token},setUserAuth} = useContext(UserContext);
 
   const userAuthThroughServer = (serverRoute, formData) => {
    
-    console.log(import.meta.env.VITE_HOST + serverRoute , formData);
-
-    console.log(import.meta.env.VITE_HOST);
-
+  
       //We can use import whne working with vite dont forget to use prefix as VITE otherwise it wont work 
       axios.post(import.meta.env.VITE_HOST + serverRoute , formData).then(({data})=>{
 
@@ -29,6 +29,7 @@ const UserAuthForm = ({ type }) => {
         // store Data in the session
         setUserAuth(data)
         // console.log(sessionStorage);
+        setRedirect(false)
 
       }).catch(({response})=>{
 
@@ -84,7 +85,7 @@ const UserAuthForm = ({ type }) => {
         return toast.error("Email is invalid")
     }
 
-    if(!passwordRegex.test(password)){
+    if(type !== "sign-in" && !passwordRegex.test(password)){
 
         return toast.error("Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letter")
     }
@@ -120,14 +121,18 @@ const UserAuthForm = ({ type }) => {
   
   return (
   
-    access_token ? <Navigate to="/" /> : <AnimationWrapper key={type}>
+    redirect || access_token ? <Navigate to="/" /> : <AnimationWrapper key={type}>
 
-      <section className="h-cover flex items-center justify-center">
+      <section className="h-cover flex items-center justify-center bg-gradient-to-b from-accent/40 to-transparent">
       <Toaster/>
-        <form id="formElement" className="w-[80%] max-w-[480px]" name="form">
-          <h1 className="text-4xl font-gelasio capitalize text-center my-5">
-            {type === "sign-in" ? "Welcome Back " : " Join us today!"}
+        <Card className="w-[90%] max-w-[440px] px-6 py-8 sm:px-10 sm:py-10">
+        <form id="formElement" name="form">
+          <h1 className="text-4xl font-gelasio capitalize text-center mb-1">
+            {type === "sign-in" ? "Welcome Back" : "Join us today!"}
           </h1>
+          <p className="text-center text-muted-foreground mb-7">
+            {type === "sign-in" ? "Sign in to continue reading and writing." : "Create an account to start writing."}
+          </p>
 
           {type != "sign-in" ? (
             <InputBoxComponent
@@ -135,7 +140,7 @@ const UserAuthForm = ({ type }) => {
               name="fullName"
               placeholder="Full Name"
               icon="fi-rr-user"/>
-          
+
           ) : (" ")}
 
           <InputBoxComponent
@@ -150,39 +155,40 @@ const UserAuthForm = ({ type }) => {
             placeholder="Password"
             icon="fi-rr-key"/>
 
-          <button className="btn-dark center mt-14" type="submit" onClick={handleSubmit}>
+          <Button className="w-full mt-6" size="lg" type="submit" onClick={handleSubmit}>
             {type.replace("-", " ")}
-          </button>
+          </Button>
 
-          <div className="relative w-full flex items-center gap-2 my-10 opacity-10 uppercase text-black font-bold">
-            <hr className="w-1/2 border-black" />
+          <div className="relative w-full flex items-center gap-3 my-8 uppercase text-xs text-muted-foreground font-semibold tracking-wide">
+            <hr className="w-1/2 border-border" />
             <p>or</p>
-            <hr className="w-1/2 border-black" />
+            <hr className="w-1/2 border-border" />
           </div>
 
-          <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center" onClick={handleGoogleAuth}>
-            <img src={googleIcon} className="w-5 " />
-            continue with google
-          </button>
+          <Button variant="outline" className="w-full" size="lg" onClick={handleGoogleAuth}>
+            <img src={googleIcon} className="w-5" />
+            Continue with Google
+          </Button>
 
           {type == "sign-in" ? (
-            <p className="mt-6 text-dark-grey text-xl text-center">
-              Don't have an account ?
-              <Link to="/signup" className="underline text-black text-xl ml-1">
+            <p className="mt-8 text-muted-foreground text-base text-center">
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-primary font-medium hover:underline">
                 Join us today.
               </Link>
             </p>
 
             ) : (
 
-            <p className="mt-6 text-dark-grey text-xl text-center">
-              Already have an account ?
-              <Link to="/signin" className="underline text-black text-xl ml-1">
+            <p className="mt-8 text-muted-foreground text-base text-center">
+              Already have an account?{" "}
+              <Link to="/signin" className="text-primary font-medium hover:underline">
                 Sign in here.
               </Link>
             </p>
           )}
         </form>
+        </Card>
       </section>
     </AnimationWrapper>
 

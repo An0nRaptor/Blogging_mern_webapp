@@ -19,8 +19,6 @@ export const UserContext = createContext({});
 
 const App = () => {
 
-  const [person, setPerson] = useState();
-
   const [userAuth, setUserAuth] = useState({});
 
   useEffect(() => {

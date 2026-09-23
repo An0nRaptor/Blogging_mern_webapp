@@ -9,6 +9,8 @@ import {activeTabRef } from "../components/InPageNavigation";
 import NoDataMessage from "../components/NoDataComponent";
 import { filterPaginationData } from "../common/FilterPaginationData";
 import LoadMoreDataBtn from "../components/LoadMoreDataBtn";
+import { Badge } from "../components/ui/badge";
+import { TrendingUp } from "lucide-react";
 
 const HomePage = () => {
   let [blogs, setBlogs] = useState(null);
@@ -167,7 +169,7 @@ const HomePage = () => {
         </div>
 
         {/*  Filters and trending blogs*/}
-        <div className="min-w-[40%] lg:min-w-[400px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden ">
+        <div className="min-w-[40%] lg:min-w-[400px] max-w-min border-l border-border pl-8 pt-3 max-md:hidden ">
           <div className="flex flex-col gap-10 ">
             <div>
               <h1 className="font-medium text-xl mb-8">
@@ -177,8 +179,10 @@ const HomePage = () => {
               <div className="flex gap-3 flex-wrap">
                 {categories.map((category, i) => {
                   return (
-                    <button key={i} className={"tag " + (pageState == category ? "bg-black text-white" : " ")} onClick={loadBlogByCategory}>
-                      {category}
+                    <button key={i} onClick={loadBlogByCategory}>
+                      <Badge variant={pageState == category ? "active" : "default"} className="cursor-pointer text-base px-4 py-1.5">
+                        {category}
+                      </Badge>
                     </button>
                   );
                 })}
@@ -186,8 +190,8 @@ const HomePage = () => {
             </div>
 
             <div>
-              <h1 className="font-medium text-xl mb-8">
-                Trending <i className="fi fi-rr-arrow-trend-up"></i>
+              <h1 className="font-medium text-xl mb-8 flex items-center gap-2">
+                Trending <TrendingUp className="h-4 w-4 text-primary" />
               </h1>
               {trendingBlogs == null ? (
                 <Loader />
